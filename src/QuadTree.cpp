@@ -6,14 +6,6 @@ using namespace std;
 using namespace arma;
 
 // =====================================================================================================================
-// bounds_TYP::bounds_TYP(int dims)
-// {
-//   _dims = dims;
-//   _max = zeros(dims);
-//   _min = zeros(dims);
-// }
-
-// =====================================================================================================================
 node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
 {
   // Assign node attributes:
@@ -21,11 +13,6 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
   _depth  = depth;
   _dims   = bounds.max.n_elem;
   _p0     = (bounds.min + bounds.max)/2;
-
-  cout << "Constructor: start ##########################################"<< endl;
-  cout << "_depth = " << _depth.current << endl;
-  cout << "_dims = " << _dims << endl;
-  cout << "_bounds.max.n_elem = " << _bounds.max.n_elem << endl;
 
   // Check that bounds have correct form:
   vec metric = _bounds.max - _bounds.min;
@@ -39,17 +26,12 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
   }
 
   // Make all subnodes = NULL:
-  cout << "allocate memory to subodes: start"<< endl;
-  cout << "_dims " << _dims << endl;
-
   int num_nodes = pow(2,_dims);
   _subnode.reserve(num_nodes);
-  cout << "loop start" << endl;
   for (int n = 0; n<num_nodes; n++)
   {
     _subnode[n] = NULL;
   }
-  cout << "loop end" << endl;
 
   // Initialize data:
   _point_count = 0;
@@ -105,33 +87,19 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
   //   |                  |                  |
   //   +------------------+------------------+
 
-  cout << "Constructor: end ##########################################"<< endl;
 }
 
 // =====================================================================================================================
 node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> data )
 {
-  cout << "insert point start ---------------------------------" << endl;
-  cout << "dims = " << _dims << endl;
-
   // Current data vector:
   // ----------------------------------------------------------------
-  cout << "Assemble point start ---------------------------------" << endl;
   vec point = zeros(_dims);
   for (int d = 0; d < _dims ; d ++)
   {
     vec * pdata = data[d];
     point[d] = pdata->at(point_index);
   }
-
-  // DIAGNOSTICS:
-  for (int d = 0; d < _dims; d++)
-  {
-    cout << "point[d] = " << point[d] << endl;
-  }
-
-  cout << "Assemble point end ---------------------------------" << endl;
-
 
   // Check if data is within node's boundaries:
   // ----------------------------------------------------------------
@@ -146,103 +114,31 @@ node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> data )
 
   // Check if maximum tree depth has been reached:
   // ----------------------------------------------------------------
-  cout << "hasNodeReachMaxDepth start ##############################" << endl;
   if (hasNodeReachMaxDepth())
   {
-    cout << "Reached Maximum depth ##############################" << endl;
     // Append point:
     _point_index_list.push_back(point_index);
     _point_count++;
 
     return this;
   }
-  cout << "hasNodeReachMaxDepth end ##############################" << endl;
 
   // Determine which subnode to insert point into:
   // ----------------------------------------------------------------
-  cout << "whichSubNodeDoesItBelongTo start ---------------------------------" << endl;
-
   int node_index = whichSubNodeDoesItBelongTo(point);
-
-  cout <<"                  "<< endl;
-  cout <<"                  "<< endl;
-  cout <<"                  "<< endl;
-  cout << "node_index = "<< node_index << endl;
-  cout <<"                  "<< endl;
-  cout <<"                  "<< endl;
-  cout <<"                  "<< endl;
-
-  cout << "whichSubNodeDoesItBelongTo end ---------------------------------" << endl;
 
   // Check if subnode exists:
   // ----------------------------------------------------------------
-  cout << "doesSubNodeExist start ---------------------------------" << endl;
   if (!doesSubNodeExist(node_index))
   {
-    cout << "about to create new node" << endl;
-    cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
-    cout << "node_index = "<< node_index << endl;
     createSubNode(node_index);
-    cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
-    cout << "New node created" << endl;
-
   }
-  cout << "doesSubNodeExist end ---------------------------------" << endl;
 
   // Insert point into node:
   // ----------------------------------------------------------------
-  cout << "Insert point into node start ---------------------------------" << endl;
-  cout << "node_index = "<< node_index << endl;
-  cout << "_subnode[node_index]->_bounds.max.n_elem = " << _subnode[node_index]->_bounds.max.n_elem << endl;
   node_TYP * newsubnode = _subnode[node_index]->insert_point(point_index,data);
-  cout << "Insert point into node end ---------------------------------" << endl;
   return newsubnode;
 }
-
-// =====================================================================================================================
-// node_TYP * node_TYP::insert_point(uint point_index, vec * data_x, vec * data_y)
-// {
-//   // Current data vector:
-//   // ----------------------------------------------------------------
-//   vec point = {data_x->at(point_index),data_y->at(point_index)};
-//
-//   // Check if data is within node's boundaries:
-//   // ----------------------------------------------------------------
-//   if (!isPointInsideBoundary(point))
-//   {
-//     cout << "Point = " << endl;
-//     point.print();
-//     cout << "is out of bounds" << endl;
-//
-//     return NULL;
-//   }
-//
-//   // Check if maximum tree depth has been reached:
-//   // ----------------------------------------------------------------
-//   if (hasNodeReachMaxDepth())
-//   {
-//     // Append point:
-//     _point_index_list.push_back(point_index);
-//     _point_count++;
-//
-//     return this;
-//   }
-//
-//   // Determine which subnode to insert point into:
-//   // ----------------------------------------------------------------
-//   int node_index = whichSubNodeDoesItBelongTo(point);
-//
-//   // Check if subnode exists:
-//   // ----------------------------------------------------------------
-//   if (!doesSubNodeExist(node_index))
-//   {
-//     createSubNode(node_index);
-//   }
-//
-//   // Insert point into node:
-//   // ----------------------------------------------------------------
-//   return _subnode[node_index]->insert_point(point_index,data_x,data_y);
-// }
 
 // =====================================================================================================================
 bool node_TYP::isPointInsideBoundary(vec point)
@@ -256,12 +152,6 @@ bool node_TYP::isPointInsideBoundary(vec point)
     double node_min = _bounds.min[dd];
     double node_max = _bounds.max[dd];
     double point_value = point[dd];
-
-    cout << "start ------" << endl;
-    cout << "node_min = " << node_min << endl;
-    cout << "node_max = " << node_max << endl;
-    cout << "point_value = " << point_value << endl;
-    cout << "end ------" << endl;
 
     // Create boolean result:
     flag = (point_value >= node_min) && (point_value <= node_max);
@@ -341,8 +231,6 @@ bool node_TYP::doesSubNodeExist(int node_index)
 // =====================================================================================================================
 void node_TYP::createSubNode(int node_index)
 {
-  cout << "create subnode ###########################:" << endl;
-
   // Origin of parent node:
   vec p0 = _p0;
 
@@ -370,10 +258,6 @@ void node_TYP::createSubNode(int node_index)
     s = s - 1;
     new_bounds.max[d] += s*dx[d];
   }
-
-  cout << "Prior creating new node ---------------------------------" << endl;
-  cout << "_dims = " << _bounds.max.n_elem << endl;
-  cout << "dims = " << new_bounds.max.n_elem << endl;
 
   // Create subnode:
   _subnode[node_index] = new node_TYP(new_bounds, new_depth);
