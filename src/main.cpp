@@ -13,34 +13,6 @@ using namespace std;
 
 int main()
 {
-  // Create tree:
-  bounds_TYP bounds;
-  depth_TYP depth;
-
-  // bounds.min = {-5,-5};
-  // bounds.max = {+5,+5};
-  // depth.max  = 8;
-  // depth.current = 0;
-  //
-  // node_TYP tree(bounds,depth);
-  //
-  // tree.p0.print("origin tree = ");
-  // cout << "max depth = " << tree.depth.max << endl;
-  //
-  // // Insert point:
-  // vec p_x = {+2.33,+0.22};
-  // vec p_y = {-1.66,-4.88};
-  //
-  // int i = 1;
-  // node_TYP * result = tree.insert_point(i,&p_x,&p_y);
-  //
-  // cout << "p_x = " << p_x[i] << endl;
-  // cout << "p_y = " << p_y[i] << endl;
-  // cout << "result->p0[0]" << result->p0[0] << endl;
-  // cout << "result->p0[1]" << result->p0[1] << endl;
-  // cout << "result->bounds.min[0]" << result->bounds.min[0] << endl;
-  // cout << "result->bounds.max[0]" << result->bounds.max[0] << endl;
-
   // Data:
   vec a = {+1.2, 3.2, 5.3};
   vec b = {+4.2, 3.9, 8.9};
@@ -48,6 +20,8 @@ int main()
   vector<vec *> data = {&a, &b, &c};
 
   // Construct binary tree:
+  bounds_TYP bounds;
+  depth_TYP depth;
   bounds.min = {-10,-10,-15};
   bounds.max = {+10,+10,+15};
   depth.max  = 10;

@@ -55,27 +55,57 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
   _point_count = 0;
   _point_index_list.reserve(100);
 
-  // Map from to signature to node ID:
-  signature_to_nodeId[{1,1,1}] = 1;
-  signature_to_nodeId[{0,1,1}] = 2;
-  signature_to_nodeId[{0,0,1}] = 3;
-  signature_to_nodeId[{1,0,1}] = 4;
-  signature_to_nodeId[{1,1,0}] = 5;
-  signature_to_nodeId[{0,1,0}] = 6;
-  signature_to_nodeId[{0,0,0}] = 7;
-  signature_to_nodeId[{1,0,0}] = 8;
+  // Map from to signature to node index [0-7]:
+  signature_to_nodeIndex[{1,1,1}] = 0;
+  signature_to_nodeIndex[{0,1,1}] = 1;
+  signature_to_nodeIndex[{0,0,1}] = 2;
+  signature_to_nodeIndex[{1,0,1}] = 3;
+  signature_to_nodeIndex[{1,1,0}] = 4;
+  signature_to_nodeIndex[{0,1,0}] = 5;
+  signature_to_nodeIndex[{0,0,0}] = 6;
+  signature_to_nodeIndex[{1,0,0}] = 7;
 
-  // Map from node ID to signature:
-  nodeId_to_signature[1] = {1,1,1};
-  nodeId_to_signature[2] = {0,1,1};
-  nodeId_to_signature[3] = {0,0,1};
-  nodeId_to_signature[4] = {1,0,1};
-  nodeId_to_signature[5] = {1,1,0};
-  nodeId_to_signature[6] = {0,1,0};
-  nodeId_to_signature[7] = {0,0,0};
-  nodeId_to_signature[8] = {1,0,0};
+  // Map from node index [0-7] to signature:
+  nodeIndex_to_signature[0] = {1,1,1};
+  nodeIndex_to_signature[1] = {0,1,1};
+  nodeIndex_to_signature[2] = {0,0,1};
+  nodeIndex_to_signature[3] = {1,0,1};
+  nodeIndex_to_signature[4] = {1,1,0};
+  nodeIndex_to_signature[5] = {0,1,0};
+  nodeIndex_to_signature[6] = {0,0,0};
+  nodeIndex_to_signature[7] = {1,0,0};
+
+  // The signature vector indicates in which direction we must move relative to the origin in a RH coordinate system
+  // to move in the direction of the new node with an index given by "node_index":
+  // +ve z:
+  //                      y
+  //                      ^
+  //                      |
+  //   +------------------+------------------+
+  //   |                  |                  |
+  //   |  node_index = 1  |  node_index = 0  |
+  //   |                  |                  |
+  //   +------------------o------------------+---- > x
+  //   |                  |                  |
+  //   |  node_index = 2  |  node_index = 3  |
+  //   |                  |                  |
+  //   +------------------+------------------+
+  //
+  //  -ve z:
+  //                      y
+  //                      ^
+  //                      |
+  //   +------------------+------------------+
+  //   |                  |                  |
+  //   |  node_index = 5  |  node_index = 4  |
+  //   |                  |                  |
+  //   +------------------o------------------+---- > x
+  //   |                  |                  |
+  //   |  node_index = 6  |  node_index = 7  |
+  //   |                  |                  |
+  //   +------------------+------------------+
+
   cout << "Constructor: end ##########################################"<< endl;
-
 }
 
 // =====================================================================================================================
@@ -163,56 +193,56 @@ node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> data )
   // ----------------------------------------------------------------
   cout << "Insert point into node start ---------------------------------" << endl;
   cout << "node_index = "<< node_index << endl;
-  cout << "_subnode[node_index]->_bounds.max.n_elem = " << _subnode[node_index-1]->_bounds.max.n_elem << endl;
-  node_TYP * newsubnode = _subnode[node_index-1]->insert_point(point_index,data);
+  cout << "_subnode[node_index]->_bounds.max.n_elem = " << _subnode[node_index]->_bounds.max.n_elem << endl;
+  node_TYP * newsubnode = _subnode[node_index]->insert_point(point_index,data);
   cout << "Insert point into node end ---------------------------------" << endl;
   return newsubnode;
 }
 
 // =====================================================================================================================
-node_TYP * node_TYP::insert_point(uint point_index, vec * data_x, vec * data_y)
-{
-  // Current data vector:
-  // ----------------------------------------------------------------
-  vec point = {data_x->at(point_index),data_y->at(point_index)};
-
-  // Check if data is within node's boundaries:
-  // ----------------------------------------------------------------
-  if (!isPointInsideBoundary(point))
-  {
-    cout << "Point = " << endl;
-    point.print();
-    cout << "is out of bounds" << endl;
-
-    return NULL;
-  }
-
-  // Check if maximum tree depth has been reached:
-  // ----------------------------------------------------------------
-  if (hasNodeReachMaxDepth())
-  {
-    // Append point:
-    _point_index_list.push_back(point_index);
-    _point_count++;
-
-    return this;
-  }
-
-  // Determine which subnode to insert point into:
-  // ----------------------------------------------------------------
-  int node_index = whichSubNodeDoesItBelongTo(point);
-
-  // Check if subnode exists:
-  // ----------------------------------------------------------------
-  if (!doesSubNodeExist(node_index))
-  {
-    createSubNode(node_index);
-  }
-
-  // Insert point into node:
-  // ----------------------------------------------------------------
-  return _subnode[node_index-1]->insert_point(point_index,data_x,data_y);
-}
+// node_TYP * node_TYP::insert_point(uint point_index, vec * data_x, vec * data_y)
+// {
+//   // Current data vector:
+//   // ----------------------------------------------------------------
+//   vec point = {data_x->at(point_index),data_y->at(point_index)};
+//
+//   // Check if data is within node's boundaries:
+//   // ----------------------------------------------------------------
+//   if (!isPointInsideBoundary(point))
+//   {
+//     cout << "Point = " << endl;
+//     point.print();
+//     cout << "is out of bounds" << endl;
+//
+//     return NULL;
+//   }
+//
+//   // Check if maximum tree depth has been reached:
+//   // ----------------------------------------------------------------
+//   if (hasNodeReachMaxDepth())
+//   {
+//     // Append point:
+//     _point_index_list.push_back(point_index);
+//     _point_count++;
+//
+//     return this;
+//   }
+//
+//   // Determine which subnode to insert point into:
+//   // ----------------------------------------------------------------
+//   int node_index = whichSubNodeDoesItBelongTo(point);
+//
+//   // Check if subnode exists:
+//   // ----------------------------------------------------------------
+//   if (!doesSubNodeExist(node_index))
+//   {
+//     createSubNode(node_index);
+//   }
+//
+//   // Insert point into node:
+//   // ----------------------------------------------------------------
+//   return _subnode[node_index]->insert_point(point_index,data_x,data_y);
+// }
 
 // =====================================================================================================================
 bool node_TYP::isPointInsideBoundary(vec point)
@@ -291,14 +321,14 @@ int node_TYP::whichSubNodeDoesItBelongTo(vec point)
   }
 
   // Get the node's index based on the node's signature:
-  int node_index = signature_to_nodeId[node_signature];
+  int node_index = signature_to_nodeIndex[node_signature];
   return node_index;
 }
 
 // =====================================================================================================================
 bool node_TYP::doesSubNodeExist(int node_index)
 {
-  if (NULL == _subnode[node_index-1]) // Subnode does NOT exist
+  if (NULL == _subnode[node_index]) // Subnode does NOT exist
   {
     return 0;
   }
@@ -320,7 +350,7 @@ void node_TYP::createSubNode(int node_index)
   vec dx = _bounds.max - p0;
 
   // Get node's signature based on node_index:
-  vector<int> node_signature = nodeId_to_signature[node_index];
+  vector<int> node_signature = nodeIndex_to_signature[node_index];
 
   // Initialize bounds:
   bounds_TYP new_bounds = _bounds;
@@ -346,5 +376,5 @@ void node_TYP::createSubNode(int node_index)
   cout << "dims = " << new_bounds.max.n_elem << endl;
 
   // Create subnode:
-  _subnode[node_index-1] = new node_TYP(new_bounds, new_depth);
+  _subnode[node_index] = new node_TYP(new_bounds, new_depth);
 }

@@ -10,7 +10,7 @@ using namespace arma;
 // =====================================================================================================================
 struct bounds_TYP
 {
-  int dims;
+  // int dims;
   vec max;
   vec min;
 
@@ -30,10 +30,26 @@ class node_TYP
 {
     public:
 
-    //      |---------|----------| pmx
-    //      |  node 2 |  node 1  |
-    //      |---------p0---------|
-    //      |  node 3 | node 4   |
+    // The following is a diagram of an octree cube.
+    // Here pmax and pmin are vectors that describe the bounds of octree cube:
+    //
+    //  pmax = bounds.max;
+    //  pmin = bounds.min;
+    //
+    //  +ve z)        y                      +ve x)       y
+    //                ^                                   ^
+    //      |---------|----------| pmax      pmax |-------|-------|
+    //      |  node 1 |  node 0  |                |   0   |   4   |
+    //      |---------o----------|--> x      z <--|-------o-------|--
+    //      |  node 2 |  node 3  |                |   3   |   7   |
+    //      |---------|----------|                |-------|-------|
+    //
+    //  -ve z)        y
+    //                ^
+    //      |---------|----------|
+    //      |  node 5 |  node 4  |
+    //      |---------x----------|--> x
+    //      |  node 6 |  node 7  |
     // pmin |---------|----------|
 
     // Node attributes:
@@ -63,8 +79,8 @@ class node_TYP
 
     // Maps:
     // The signature is a vector which points from the parent nodes's origin to the direction of the new subnode:
-    map<vector<int>,int> signature_to_nodeId;
-    map<int,vector<int>> nodeId_to_signature;
+    map<vector<int>,int> signature_to_nodeIndex;
+    map<int,vector<int>> nodeIndex_to_signature;
 
     // Methods:
     bool isPointInsideBoundary(vec point);
@@ -72,20 +88,6 @@ class node_TYP
     int  whichSubNodeDoesItBelongTo(vec point);
     bool doesSubNodeExist(int node_index);
     void createSubNode(int node_index);
-
-    // Quadtree:
-    // Subnodes within parent node:
-    //
-    // subnode[0] : node 1
-    // subnode[1] : node 2
-    // subnode[2] : node 3
-    // subnode[3] : node 4
-    //
-    //   +------------------+------------------+
-    //   |      node 2      |      node 1      |
-    //   +------------------+------------------+
-    //   |      node 3      |      node 4      |
-    //   +------------------+------------------+
 };
 
 #endif
