@@ -7,10 +7,6 @@ clc
 saveFig = 1;
 
 % Read data produced and saved by C++ code:
-% home_dir = cd;
-% cd ..
-% cd output_files
-
 fileName{1} = 'a.h5';
 fileName{2} = 'b.h5';
 fileName{3} = 'c.h5';
@@ -32,8 +28,6 @@ plot(x_data(i_index),y_data(i_index),'r.')
 plot(x_data(i_index),y_data(i_index),'ro')
 xlim([-1,1]*2)
 ylim([0,1]*2)
-
-% cd(home_dir);
 
 % Save figure:
 if saveFig
