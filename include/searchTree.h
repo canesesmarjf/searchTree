@@ -1,5 +1,5 @@
-#ifndef QUADTREE_H
-#define QUADTREE_H
+#ifndef SEARCHTREE_H
+#define SEARCHTREE_H
 
 #include <vector>
 #include <armadillo>
@@ -10,12 +10,8 @@ using namespace arma;
 // =====================================================================================================================
 struct bounds_TYP
 {
-  // int dims;
   vec max;
   vec min;
-
-  // bounds_TYP();
-  // bounds_TYP(int dims);
 };
 
 // =====================================================================================================================
@@ -77,8 +73,8 @@ class node_TYP
 
     // Maps:
     // The signature is a vector which points from the parent nodes's origin to the direction of the new subnode:
-    map<vector<int>,int> signature_to_nodeIndex;
-    map<int,vector<int>> nodeIndex_to_signature;
+    // map<vector<int>,int> signature_to_nodeIndex;
+    // map<int,vector<int>> nodeIndex_to_signature;
 
     // Methods:
     bool isPointInsideBoundary(vec point);

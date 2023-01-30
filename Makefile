@@ -11,12 +11,12 @@ HDF5_INCL = $(LIB_ROOT)HDF5_libs/include/
 HDF5_LIBS = $(LIB_ROOT)HDF5_libs/lib/
 INCL = -I $(ARMA_INCL) -I $(HDF5_INCL) -I include/
 LIBS = -L $(ARMA_LIBS) -L $(HDF5_LIBS) -larmadillo -lhdf5 -lhdf5_cpp -DARMA_USE_HDF5 -headerpad_max_install_names
-OBJ = main.o QuadTree.o
+OBJ = main.o searchTree.o
 
-all: bin/QuadSearch.exe
+all: bin/searchTree.exe
 
-bin/QuadSearch.exe: obj/main.o obj/QuadTree.o
-	$(COMPILER) -o $@ $^ $(LIBS)
+bin/searchTree.exe: obj/main.o obj/searchTree.o
+	$(COMPILER) -o $@ $^ $(LIBS) -std=c++11
 
 	if [ $(SYS) = "Darwin" ]; then \
 		echo "Additional steps for compilation on OS... DONE!"; \
@@ -24,10 +24,10 @@ bin/QuadSearch.exe: obj/main.o obj/QuadTree.o
 	fi
 
 obj/main.o: src/main.cpp
-	$(COMPILER) -c $^ -o $@ $(INCL) -std=c++11
+	$(COMPILER) -c $^ -o $@ $(INCL) -std=c++11 -DARMA_USE_HDF5
 
-obj/QuadTree.o: src/QuadTree.cpp include/QuadTree.h
-	$(COMPILER) -c $< -o $@ $(INCL) -std=c++11
+obj/searchTree.o: src/searchTree.cpp include/searchTree.h
+	$(COMPILER) -c $< -o $@ $(INCL) -std=c++11 -DARMA_USE_HDF5
 
 clean: cleanBin cleanObj
 

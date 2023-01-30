@@ -1,67 +1,48 @@
-% This script read the output produced during Ex_5 and shows the result of producing a normally distributed set
+% In this script we read H5 data produced in C++:
 
 clear all
 close all
 clc
 
+saveFig = 1;
+
 % Read data produced and saved by C++ code:
-home_dir = cd;
-cd ..
-cd output_files
+% home_dir = cd;
+% cd ..
+% cd output_files
 
-fileName = 'data.txt';
-set = load(fileName);
+fileName{1} = 'a.h5';
+fileName{2} = 'b.h5';
+fileName{3} = 'c.h5';
+fileName{4} = 'point_index.h5';
 
-for qq = 1:3
-    try
-        fileName = ['result_',num2str(qq-1),'.txt'];
-        xq{qq} = load(fileName);
-    catch
-        disp(['File note found: ',fileName]);
-        continue;
-    end
+for ii = 1:numel(fileName)
+    data.(fileName{ii}(1:end-3)) = h5read(['../output_files/',fileName{ii}],['/dataset']);
 end
 
-cd(home_dir);
+x_data = data.a;
+y_data = data.b;
+i_index = data.point_index + 1;
 
-% Create analytic PDF:
-x = linspace(-4,4,1e3);
-y = normalDistPDF(x,0,8/10);
-
-% Create histogram:
-if 0
-    figure('color','w')
-    hold on
-    box on
-    h(1) = histogram(set,100,'Normalization','pdf');
-    h(2) = plot(x,y,'r','LineWidth',2);
-    
-    legendText{1} = ['C++ armadillo data'];
-    legendText{2} = ['Theoretical PDF'];
-    
-    title('Normally distributed data produced from C++ code')
-    hL = legend(h,legendText);
-    hL.Interpreter = 'Latex';
-    hL.FontSize = 13;
-end
-
-% Plot raw data with queries from C++ binary search tree:
-figure('color','w')
-hold on
+figure('color','w');
 box on
-hq(1) = plot(set,'k.');
-grid on;
+hold on
+plot(x_data,y_data,'k.')
+plot(x_data(i_index),y_data(i_index),'r.')
+plot(x_data(i_index),y_data(i_index),'ro')
+xlim([-1,1]*2)
+ylim([0,1]*2)
 
-for qq = 1:3
-    try
-        ix     = xq{qq}+1;
-        set_ix = set(ix);
+% cd(home_dir);
+
+% Save figure:
+if saveFig
+    folderName = '../output_files/';
+    figureName = 'Step_1_find_results';
     
-        hq(qq+1) = plot(ix,set_ix,'ro');
-        plot(ix,set_ix,'ro');
-    catch
-        disp(['Data not found']);
-        continue;
-    end
-end
+    % PDF figure:
+    exportgraphics(gcf,[folderName,figureName,'.pdf'],'Resolution',600,'ContentType', 'vector') 
 
+    % TIFF figure:
+    exportgraphics(gcf,[folderName,figureName,'.tiff'],'Resolution',600) 
+end

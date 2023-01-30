@@ -1,9 +1,35 @@
-#include "QuadTree.h"
+#include "searchTree.h"
 #include <iostream>
 #include <cstdlib>
 
 using namespace std;
 using namespace arma;
+
+// =====================================================================================================================
+namespace node_maps
+{
+    static map<vector<int>,int> signature_to_nodeIndex = {
+        {{1,1,1}, 0},
+        {{0,1,1}, 1},
+        {{0,0,1}, 2},
+        {{1,0,1}, 3},
+        {{1,1,0}, 4},
+        {{0,1,0}, 5},
+        {{0,0,0}, 6},
+        {{1,0,0}, 7}
+    };
+
+    static map<int,vector<int>> nodeIndex_to_signature = {
+        {0, {1,1,1}},
+        {1, {0,1,1}},
+        {2, {0,0,1}},
+        {3, {1,0,1}},
+        {4, {1,1,0}},
+        {5, {0,1,0}},
+        {6, {0,0,0}},
+        {7, {1,0,0}}
+    };
+}
 
 // =====================================================================================================================
 node_TYP::node_TYP()
@@ -41,6 +67,7 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
   _point_count = 0;
   // _point_index_list.reserve(1000);
 
+  /*
   // Map from to signature to node index [0-7]:
   signature_to_nodeIndex[{1,1,1}] = 0;
   signature_to_nodeIndex[{0,1,1}] = 1;
@@ -60,8 +87,9 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
   nodeIndex_to_signature[5] = {0,1,0};
   nodeIndex_to_signature[6] = {0,0,0};
   nodeIndex_to_signature[7] = {1,0,0};
+  */
 
-  // The signature vector indicates in which direction we must move relative to the origin in a RH coordinate system
+  // The "signature" vector indicates in which direction we must move relative to the origin in a RH coordinate system
   // to move in the direction of the new node with an index given by "node_index":
   // +ve z:
   //                      y
@@ -132,7 +160,7 @@ node_TYP * node_TYP::find_points(vec point)
 }
 
 // =====================================================================================================================
-node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> *data )
+node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> * data)
 {
 
   // Current data vector:
@@ -148,10 +176,11 @@ node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> *data )
   // ----------------------------------------------------------------
   if (!isPointInsideBoundary(point))
   {
+    /*
     cout << "Point = " << endl;
     point.print();
     cout << "is out of bounds" << endl;
-
+    */
     return NULL;
   }
 
@@ -302,7 +331,7 @@ int node_TYP::whichSubNodeDoesItBelongTo(vec point)
   }
 
   // Get the node's index based on the node's signature:
-  int node_index = signature_to_nodeIndex[node_signature];
+  int node_index = node_maps::signature_to_nodeIndex[node_signature];
   return node_index;
 }
 
@@ -329,7 +358,7 @@ void node_TYP::createSubNode(int node_index)
   vec dx = _bounds.max - p0;
 
   // Get node's signature based on node_index:
-  vector<int> node_signature = nodeIndex_to_signature[node_index];
+  vector<int> node_signature = node_maps::nodeIndex_to_signature[node_index];
 
   // Initialize bounds:
   bounds_TYP new_bounds = _bounds;
