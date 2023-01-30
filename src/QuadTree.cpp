@@ -90,8 +90,47 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
 }
 
 // =====================================================================================================================
+node_TYP * node_TYP::find_points(vec point)
+{
+
+  // Check if data is within node's boundaries:
+  // ----------------------------------------------------------------
+  if (!isPointInsideBoundary(point))
+  {
+    cout << "Point = " << endl;
+    point.print();
+    cout << "is out of bounds" << endl;
+
+    return NULL;
+  }
+
+  // Check if maximum tree depth has been reached:
+  // ----------------------------------------------------------------
+  if (hasNodeReachMaxDepth())
+  {
+    return this;
+  }
+
+  // Determine which subnode to search next:
+  // ----------------------------------------------------------------
+  int node_index = whichSubNodeDoesItBelongTo(point);
+
+  // Check if subnode exists:
+  // ----------------------------------------------------------------
+  if (!doesSubNodeExist(node_index))
+  {
+    return NULL;
+  }
+
+  // Drill further into subnode:
+  return this->_subnode[node_index]->find_points(point);
+
+}
+
+// =====================================================================================================================
 node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> data )
 {
+
   // Current data vector:
   // ----------------------------------------------------------------
   vec point = zeros(_dims);

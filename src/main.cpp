@@ -8,29 +8,67 @@
 
 using namespace std::chrono;
 using namespace std;
+using namespace arma;
 
 int main()
 {
+  // Variables for measuring time:
+  time_point<high_resolution_clock> start, end;
+  milliseconds duration_insert;
+  microseconds duration_find;
+
   // Create Data:
   // ===================================================================================================================
-  vec a = {+1.2, 3.2, 5.3};
-  vec b = {+4.2, 3.9, 8.9};
-  vec c = {-6.2, 6.2, 4.2};
+  int N_CP = 1e5;
+  vec a = 2*randu(N_CP)-1;
+  vec b = 2*randu(N_CP)-1;
+  vec c = 2*randu(N_CP)-1;
   vector<vec *> data = {&a, &b, &c};
+
+  cout << "size of double in bytes = " << sizeof(double) << endl;
+  cout << "size of int in bytes    = " << sizeof(int) << endl;
+  cout << "size of a in bytes      = " << sizeof(a) << endl;
+  cout << "size of &a in bytes     = " << sizeof(&a) << endl;
+  cout << "size of data in bytes   = " << sizeof(data) << endl;
+  cout << "size of &data in bytes  = " << sizeof(&data) << endl;
 
   // Instantiate a search tree:
   // ===================================================================================================================
   bounds_TYP bounds;
   depth_TYP depth;
-  bounds.min = {-10,-10};
-  bounds.max = {+10,+10};
-  depth.max  = 10;
+  bounds.min = {-1,-1};
+  bounds.max = {+1,+1};
+  depth.max  = 6;
   depth.current = 0;
   node_TYP searchTree(bounds,depth);
 
   // Insert data into tree:
   // ===================================================================================================================
+  start = high_resolution_clock::now();
+  for (int i = 0; i < N_CP; i++)
+  {
+    node_TYP * node = searchTree.insert_point(i,data);
+  }
+  end = high_resolution_clock::now();
+  duration_insert = duration_cast<milliseconds>(end - start);
+  cout << " time taken to insert all points = " << duration_insert.count() << " [ms]" << endl;
+
+  // Checking the find_points method:
   int i = 0;
+  vec point = {data[0]->at(i),data[1]->at(i)};
+  point.print("point to search = ");
+  start = high_resolution_clock::now();
+  node_TYP * result = searchTree.find_points(point);
+  end = high_resolution_clock::now();
+  duration_find = duration_cast<microseconds>(end - start);
+  cout << " time taken to find 1 point = " << duration_find.count() << " [us]" << endl;
+
+  cout << "contents of result = " << result << endl;
+  cout << "Number of points in this node = " << result->_point_count << endl;
+  result->_p0.print("origin of node = ");
+
+  // Test:
+  i = 0;
   node_TYP * bin_node = searchTree.insert_point(i,data);
 
   // Print data inserted:
