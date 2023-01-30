@@ -128,7 +128,7 @@ node_TYP * node_TYP::find_points(vec point)
 }
 
 // =====================================================================================================================
-node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> data )
+node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> *data )
 {
 
   // Current data vector:
@@ -136,7 +136,7 @@ node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> data )
   vec point = zeros(_dims);
   for (int d = 0; d < _dims ; d ++)
   {
-    vec * pdata = data[d];
+    vec * pdata = (*data)[d];
     point[d] = pdata->at(point_index);
   }
 

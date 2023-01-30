@@ -67,7 +67,7 @@ class node_TYP
     node_TYP(bounds_TYP bounds,depth_TYP depth);
 
     // Methods:
-    node_TYP * insert_point(uint point_index, vector<vec *> data);
+    node_TYP * insert_point(uint point_index, vector<vec *> *data);
     node_TYP * find_points(vec point);
     // node_TYP * get_subNode(int index);
 

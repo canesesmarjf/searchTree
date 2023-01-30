@@ -47,7 +47,7 @@ int main()
   start = high_resolution_clock::now();
   for (int i = 0; i < N_CP; i++)
   {
-    node_TYP * node = searchTree.insert_point(i,data);
+    node_TYP * node = searchTree.insert_point(i,&data);
   }
   end = high_resolution_clock::now();
   duration_insert = duration_cast<milliseconds>(end - start);
@@ -69,7 +69,7 @@ int main()
 
   // Test:
   i = 0;
-  node_TYP * bin_node = searchTree.insert_point(i,data);
+  node_TYP * bin_node = searchTree.insert_point(i,&data);
 
   // Print data inserted:
   // ===================================================================================================================
