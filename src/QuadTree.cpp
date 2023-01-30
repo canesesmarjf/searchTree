@@ -6,6 +6,10 @@ using namespace std;
 using namespace arma;
 
 // =====================================================================================================================
+node_TYP::node_TYP()
+{};
+
+// =====================================================================================================================
 node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
 {
   // Assign node attributes:
@@ -35,7 +39,7 @@ node_TYP::node_TYP(bounds_TYP bounds,depth_TYP depth)
 
   // Initialize data:
   _point_count = 0;
-  _point_index_list.reserve(100);
+  // _point_index_list.reserve(1000);
 
   // Map from to signature to node index [0-7]:
   signature_to_nodeIndex[{1,1,1}] = 0;
@@ -178,6 +182,54 @@ node_TYP * node_TYP::insert_point(uint point_index, vector<vec *> *data )
   node_TYP * newsubnode = _subnode[node_index]->insert_point(point_index,data);
   return newsubnode;
 }
+
+/*
+void node_TYP::insert_point(uint point_index, vector<vec *> *data )
+{
+
+  // Current data vector:
+  // ----------------------------------------------------------------
+  vec point = zeros(_dims);
+  for (int d = 0; d < _dims ; d ++)
+  {
+    vec * pdata = (*data)[d];
+    point[d] = pdata->at(point_index);
+  }
+
+  // Check if data is within node's boundaries:
+  // ----------------------------------------------------------------
+  if (!isPointInsideBoundary(point))
+  {
+    cout << "Point = " << endl;
+    point.print();
+    cout << "is out of bounds" << endl;
+  }
+
+  // Check if maximum tree depth has been reached:
+  // ----------------------------------------------------------------
+  if (hasNodeReachMaxDepth())
+  {
+    // Append point:
+    _point_index_list.push_back(point_index);
+    _point_count++;
+  }
+
+  // Determine which subnode to insert point into:
+  // ----------------------------------------------------------------
+  int node_index = whichSubNodeDoesItBelongTo(point);
+
+  // Check if subnode exists:
+  // ----------------------------------------------------------------
+  if (!doesSubNodeExist(node_index))
+  {
+    createSubNode(node_index);
+  }
+
+  // Insert point into node:
+  // ----------------------------------------------------------------
+  _subnode[node_index]->insert_point(point_index,data);
+}
+*/
 
 // =====================================================================================================================
 bool node_TYP::isPointInsideBoundary(vec point)

@@ -69,7 +69,6 @@ class node_TYP
     // Methods:
     node_TYP * insert_point(uint point_index, vector<vec *> *data);
     node_TYP * find_points(vec point);
-    // node_TYP * get_subNode(int index);
 
     // private:
 
