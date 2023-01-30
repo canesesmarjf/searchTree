@@ -66,15 +66,10 @@ class node_TYP
     node_TYP * insert_point(uint point_index, vector<vec *> *data);
     node_TYP * find_points(vec point);
 
-    // private:
+    private:
 
     // Subnodes:
     vector<node_TYP *> _subnode;
-
-    // Maps:
-    // The signature is a vector which points from the parent nodes's origin to the direction of the new subnode:
-    // map<vector<int>,int> signature_to_nodeIndex;
-    // map<int,vector<int>> nodeIndex_to_signature;
 
     // Methods:
     bool isPointInsideBoundary(vec point);

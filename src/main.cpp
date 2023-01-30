@@ -94,7 +94,7 @@ int main()
   cout << "**************************** FIND **************************************" << endl;
 
   // Search location:
-  vec point = {0,1};
+  vec point = {0,0.5};
   point.print("point to search = ");
   cout << " " << endl;
 
